@@ -1,5 +1,5 @@
 const User = require("../models/userModel");
-const jwt = require("jsonwebtoken");
+const generateToken = require("../utils/generateToken");
 const { signupSchema, signinSchema } = require("../validations/authValidation");
 
 const signupUser = async (req, res) => {
@@ -72,20 +72,27 @@ const loginUser = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
+    const token = generateToken(user._id);
 
-    return res.status(200).json({
-      success: true,
-      message: "Login successfully",
-      token,
-      data: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-      },
-    });
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: Number(process.env.COOKIE_MAX_AGE),
+    };
+
+    return res
+      .status(200)
+      .cookie("accessToken", token, cookieOptions)
+      .json({
+        success: true,
+        message: "Login successfully",
+        data: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+        },
+      });
   } catch (err) {
     console.error(err);
     return res.status(500).json({

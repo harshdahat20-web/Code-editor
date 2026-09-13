@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Eye, EyeOff } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
 import api from "@/lib/axios";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { setUser } = useAuth();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +26,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await api.post("/login", formData);
+      const res = await api.post("/login", formData);
+      setUser(res.data.data);
       router.push("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");

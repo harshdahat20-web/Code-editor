@@ -77,7 +77,7 @@ const loginUser = async (req, res) => {
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
       maxAge: Number(process.env.COOKIE_MAX_AGE),
     };
 
@@ -107,7 +107,7 @@ const logoutUSer = async (req, res) => {
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
     });
     return res.status(200).json({
       success: true,
@@ -121,4 +121,5 @@ const logoutUSer = async (req, res) => {
     });
   }
 };
+
 module.exports = { signupUser, loginUser, logoutUSer };

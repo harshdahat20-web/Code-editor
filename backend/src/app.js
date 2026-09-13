@@ -4,12 +4,13 @@ const cookieParser = require("cookie-parser");
 
 const authRouter = require("./routes/authRoute");
 const userRouter = require("./routes/userRoute");
-const projectRouter = require("./routes/projectRoute"); 
+const projectRouter = require("./routes/projectRoute");
 
 const app = express();
+
 app.use(
   cors({
-    origin: "http://localhost:3001",
+    origin: process.env.CLIENT_URL,
     credentials: true,
   }),
 );
@@ -18,7 +19,7 @@ app.use(cookieParser());
 
 app.use("/api/v1", authRouter);
 app.use("/api/v1", userRouter);
-app.use("/api/v1/projects", projectRouter); 
+app.use("/api/v1/projects", projectRouter);
 
 app.get("/", (req, res) => {
   res.send("API is running");
